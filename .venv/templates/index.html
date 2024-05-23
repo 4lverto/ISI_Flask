@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuperCompare - Comparador de Productos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}">
+
+</head>
+<body>
+    <header>
+        <h1>SuperCompare - Comparador de Productos</h1>
+    </header>
+    <main>
+        <div class="container">
+            <form method="POST">
+                <input type="text" name="query" placeholder="Introduce el producto que buscas" required>
+                <button type="submit">Buscar</button>
+            </form>
+            
+            {% if items %}
+                
+                <ul>
+                    {% for item in items %}
+                        <li>
+                            <img src="{{ item.image }}" alt="Imagen del producto" width="100">
+                            <span>{{ item.title }} - {{ item.price }} $</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                {% if query %}
+                    <p>No se encontraron resultados para "{{ query }}".</p>
+                {% endif %}
+            {% endif %}
+        </div>
+    </main>
+</body>
+</html>
