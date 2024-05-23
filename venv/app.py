@@ -8,15 +8,12 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    print("Entrando en la función index")
     items = []
     query = ''  # Inicializar query para evitar UnboundLocalError
     if request.method == 'POST':
-        print("Método POST detectado")
         query = request.form['query']
-        print(f'Consulta recibida: {query}')
         search_url = f'https://www.plazavea.com.pe/search/?_query={query}'
-        print(f'URL de búsqueda: {search_url}')
+        app.logger.debug(f"URL de búsqueda: {search_url}")
 
         # Configuración de Selenium
         chrome_options = Options()
@@ -28,27 +25,37 @@ def index():
             time.sleep(5)  # Espera 5 segundos para que la página se cargue completamente
             html = driver.page_source
             soup = BeautifulSoup(html, 'html.parser')
-            print("HTML parseado correctamente")
 
-            # Imprimir una parte del HTML para verificar la estructura
-            print("HTML de respuesta (primeros 2000 caracteres):")
-            print(soup.prettify()[:2000])
+            # Buscar todos los contenedores de productos
+            found_details = soup.find_all('div', class_='Showcase__content')
+            app.logger.debug(f"Productos encontrados: {len(found_details)}")
 
-            # Buscar todos los enlaces con la clase 'Showcase__name'
-            found_details = soup.find_all('a', class_='Showcase__name')
-            print(f"Número de elementos encontrados con la clase 'Showcase__name': {len(found_details)}")
-
-            for i, details in enumerate(found_details):
-                print(f"Elemento {i}: {details.prettify()}")
-                title = details.get_text(strip=True)  # Obtener el texto del enlace
-                print(f"Producto encontrado: {title}")
-                items.append({'title': title})
-
+            # Limitar a los primeros 6 productos
+            for details in found_details[:6]:
+                app.logger.debug(f"Detalles del producto HTML: {details.prettify()}")
+                name_tag = details.find('a', class_='Showcase__name')
+                if name_tag:
+                    title = name_tag.get_text(strip=True)  # Obtener el texto del enlace
+                    app.logger.debug(f"Producto: {title}")
+                    price_tag = details.find('div', class_='Showcase__salePrice')
+                    if price_tag:
+                        app.logger.debug(f"Encontrado price_tag: {price_tag}")
+                        if 'data-price' in price_tag.attrs:
+                            price = price_tag['data-price']
+                            app.logger.debug(f"Precio: {price}")  # Mensaje de depuración para ver el precio del producto
+                        else:
+                            price = "Precio no disponible"
+                            app.logger.debug(f"data-price no encontrado en price_tag para el producto {title}")
+                    else:
+                        price = "Precio no disponible"
+                        app.logger.debug(f"price_tag no encontrado para el producto {title}")
+                    items.append({'title': title, 'price': price})
+                else:
+                    app.logger.debug("Nombre del producto no encontrado")
+        except Exception as e:
+            app.logger.error(f"Error al procesar la solicitud: {e}")
         finally:
             driver.quit()
-
-    else:
-        print("Método GET detectado")
 
     return render_template('index.html', items=items, query=query)
 
