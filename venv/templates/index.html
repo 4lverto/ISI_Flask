@@ -3,29 +3,37 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Búsqueda de Productos</title>
+    <title>Comparador de Precios</title>
+    <link rel = "stylesheet" type = "text/css" href="css/styles.css"/>
   </head>
   <body>
-    <h1>Búsqueda de Productos</h1>
-    <form method="POST">
-      <input type="text" name="query" placeholder="Introduce el producto que buscas" required>
-      <button type="submit">Buscar</button>
-    </form>
+    <header>
+      <h1>Comparador de Precios de Supermercado</h1>
+    </header>
+    <main>
+      <form method="POST" class="search-form">
+        <input type="text" name="query" placeholder="Introduce el producto que buscas" required>
+        <button type="submit">Buscar</button>
+      </form>
     
-    {% if items %}
-      <h2>Resultados para "{{ query }}"</h2>
-      <ul>
-        {% for item in items %}
-          <li>
-            <img src="{{ item.image }}" alt="Imagen del producto" width="100">
-            <span>{{ item.title }} - {{ item.price }}</span>
-          </li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      {% if query %}
-        <p>No se encontraron resultados para "{{ query }}".</p>
+      {% if items %}
+        <h2>Resultados para "{{ query }}"</h2>
+        <div class="product-grid">
+          {% for item in items %}
+            <div class="product-card">
+              <img src="{{ item.image }}" alt="Imagen del producto" class="product-image">
+              <div class="product-info">
+                <h3 class="product-title">{{ item.title }}</h3>
+                <p class="product-price">Precio: {{ item.price }}</p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        {% if query %}
+          <p>No se encontraron resultados para "{{ query }}".</p>
+        {% endif %}
       {% endif %}
-    {% endif %}
+    </main>
   </body>
 </html>
