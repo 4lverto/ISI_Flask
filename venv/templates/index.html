@@ -16,7 +16,10 @@
       <h2>Resultados para "{{ query }}"</h2>
       <ul>
         {% for item in items %}
-          <li>{{ item.title }} - {{ item.price }}</li>
+          <li>
+            <img src="{{ item.image }}" alt="Imagen del producto" width="100">
+            <span>{{ item.title }} - {{ item.price }}</span>
+          </li>
         {% endfor %}
       </ul>
     {% else %}
