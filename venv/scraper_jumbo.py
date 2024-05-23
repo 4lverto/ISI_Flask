@@ -6,7 +6,7 @@ import time
 def get_product_names(details):
     names = []
     for detail in details:
-        name_tag = detail.find('a', class_='Showcase__name')
+        name_tag = detail.find('a', class_='product-card-name')
         if name_tag:
             title = name_tag.get_text(strip=True)
             names.append(title)
@@ -17,18 +17,18 @@ def get_product_names(details):
 def get_product_prices(details):
     prices = []
     for detail in details:
-        price_tag = detail.find('div', class_='Showcase__salePrice')
-        if price_tag and 'data-price' in price_tag.attrs:
-            price = price_tag['data-price']
+        price_tag = detail.find('span', class_='prices-main-price')
+        if price_tag:
+            prices.append(price_tag.get_text(strip=True))
         else:
             price = "Precio no disponible"
-        prices.append(price)
+            prices.append(price)
     return prices
 
 def get_product_images(details):
     images = []
     for detail in details:
-        img_tag = detail.find('figure', class_='Showcase__photo').find('img')
+        img_tag = detail.find('img', class_='lazy-image')
         if img_tag and 'src' in img_tag.attrs:
             img_url = img_tag['src']
             images.append(img_url)
@@ -36,8 +36,8 @@ def get_product_images(details):
             images.append("Imagen no disponible")
     return images
 
-def scrape_plazavea(query):
-    search_url = f'https://www.plazavea.com.pe/search/?_query={query}'
+def scrape_jumbo(query):
+    search_url = f'https://www.jumbo.cl/busqueda?ft={query}'
     
     chrome_options = Options()
     chrome_options.add_argument("--headless")
@@ -49,12 +49,10 @@ def scrape_plazavea(query):
         html = driver.page_source
         soup = BeautifulSoup(html, 'html.parser')
 
-        found_details = soup.find_all('div', class_='Showcase__content')
+        found_details = soup.find_all('div', class_='product-card-wrap')
 
-        # Para limitar a los primeros 6 productos, descomentar la siguiente línea
+        # Limitar a los primeros 6 productos
         details_to_process = found_details[:6]
-        
-        # También deberemos sustituir "found_details" por "details_to_process" en las 3 siguientes líneas
         
         names = get_product_names(details_to_process)
         prices = get_product_prices(details_to_process)
