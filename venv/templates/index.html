@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Búsqueda de Productos</title>
+  </head>
+  <body>
+    <h1>Búsqueda de Productos</h1>
+    <form method="POST">
+      <input type="text" name="query" placeholder="Introduce el producto que buscas" required>
+      <button type="submit">Buscar</button>
+    </form>
+    
+    {% if items %}
+      <h2>Resultados para "{{ query }}"</h2>
+      <ul>
+        {% for item in items %}
+          <li>{{ item.title }}</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      {% if query %}
+        <p>No se encontraron resultados para "{{ query }}".</p>
+      {% endif %}
+    {% endif %}
+  </body>
+</html>
