@@ -52,7 +52,7 @@ def scrape_jumbo(query):
         found_details = soup.find_all('div', class_='product-card-wrap')
 
         # Limitar a los primeros 6 productos
-        details_to_process = found_details[:6]
+        details_to_process = found_details[:10]
         
         names = get_product_names(details_to_process)
         prices = get_product_prices(details_to_process)
